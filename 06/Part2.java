@@ -12,10 +12,8 @@ public class Part2 {
         Scanner s = new Scanner(new File("input.txt"));
         List<Character> lst = new ArrayList<>();
         char[] input = s.nextLine().toCharArray();
-        for (int i = 0; i < input.length; i++) {
+        for (int i = 14; i < input.length; i++) {
             lst.add(input[i]);
-            if (lst.size() < 14)
-                continue;
             if (diff(lst, i)) {
                 System.out.println(i + 1);
                 return;

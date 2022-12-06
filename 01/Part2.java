@@ -6,9 +6,7 @@ import java.util.Scanner;
 
 public class Part2 {
     public static void main(String[] args) throws FileNotFoundException {
-
-        File in = new File("input.txt");
-        Scanner s = new Scanner(in);
+        Scanner s = new Scanner(new File("input.txt"));
         List<Integer> topThree = new ArrayList<>();
         int sum = 0;
         while (s.hasNextLine()) {

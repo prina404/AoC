@@ -18,19 +18,24 @@ public class Solution {
         List<Dir> allDir = new ArrayList<>();
 
         while (s.hasNextLine()) {
+
             String line = s.nextLine();
-            if (line.isEmpty())
-                break;
             String[] tokens = line.split(" ");
+
             switch (tokens[1]) {
+
                 case "cd":
                     if (tokens[2].equals(".."))
                         pwd.removeLast();
+                    else if (tokens[2].equals("/"))
+                        pwd.clear();
                     else
                         pwd.addLast(tokens[2]);
                     continue;
+
                 case "ls":
                     continue;
+                    
                 default:
                     Dir current = root.findDir(pwd.toArray(new String[0]));
                     if (tokens[0].equals("dir")) {

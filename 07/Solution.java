@@ -1,4 +1,3 @@
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -7,9 +6,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 
-public class Part2 {
+public class Solution {
 
     // Messy code, needs some SEVERE refactoring
     public static void main(String[] args) throws IOException {
@@ -17,13 +15,12 @@ public class Part2 {
 
         Dir root = new Dir("/");
         Deque<String> pwd = new LinkedList<>();
-        Set<Dir> allDir = new HashSet<>();
+        List<Dir> allDir = new ArrayList<>();
 
         while (s.hasNextLine()) {
             String line = s.nextLine();
             if (line.isEmpty())
                 break;
-
             String[] tokens = line.split(" ");
             switch (tokens[1]) {
                 case "cd":
@@ -37,20 +34,38 @@ public class Part2 {
                 default:
                     Dir current = root.findDir(pwd.toArray(new String[0]));
                     if (tokens[0].equals("dir")) {
-                        Dir nuovaFolder = new Dir(tokens[1]);
-                        current.addElem(nuovaFolder);
-                        allDir.add(nuovaFolder);
+                        Dir newFolder = new Dir(tokens[1]);
+                        current.addElem(newFolder);
+                        allDir.add(newFolder);
                     } else
                         current.addElem(new MyFile(tokens[1], Integer.parseInt(tokens[0])));
             }
         }
 
-        int min = root.getSize();
-        for (Dir d : allDir) {
-            int freeSpace = root.getSize() - d.getSize();
+        System.out.println("Part 1 : " + part1(allDir));
+        System.out.println("Part 2 : " + part2(allDir, root.getSize()));
+    }
+
+    private static int part1(List<Dir> lst) {
+        // this is needed to remove all duplicates from the list
+        // declaring allDir as a Set in the beginning breaks everything :)
+        lst = new ArrayList<>(new HashSet<>(lst));
+        int sum = 0;
+        for (Dir d : lst) {
+            if (d.getSize() <= 100000) {
+                sum += d.getSize();
+            }
+        }
+        return sum;
+    }
+
+    private static int part2(List<Dir> lst, int rootSize) {
+        int min = rootSize;
+        for (Dir d : lst) {
+            int freeSpace = rootSize - d.getSize();
             if (freeSpace < 40000000 && d.getSize() < min)
                 min = d.getSize();
         }
-        System.out.println(min);
+        return min;
     }
 }

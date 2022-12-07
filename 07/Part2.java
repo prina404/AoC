@@ -1,7 +1,6 @@
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -12,9 +11,8 @@ public class Part2 {
 
     // Messy code, needs some SEVERE refactoring
     public static void main(String[] args) throws IOException {
-        String in = Files.readString(Path.of("input.txt"));
+        Scanner s = new Scanner(new File("input.txt"));
 
-        Scanner s = new Scanner(in);
         Dir root = new Dir("/");
         List<String> pwd = new ArrayList<>();
         Set<Dir> allDir = new HashSet<>();
@@ -44,16 +42,13 @@ public class Part2 {
                         current.addElem(new MyFile(tokens[1], Integer.parseInt(tokens[0])));
             }
         }
-        int sum = 0;
-        List<Integer> allSize = new ArrayList<>();
-        for (Entry d : root)
-            sum += d.getSize();
 
+        int min = root.getSize();
         for (Dir d : allDir) {
-            if (sum - d.getSize() < 40000000)
-                allSize.add(d.getSize());
+            int freeSpace = root.getSize() - d.getSize();
+            if (freeSpace < 40000000 && d.getSize() < min)
+                min = d.getSize();
         }
-        allSize.sort(null);
-        System.out.println(allSize.get(0));
+        System.out.println(min);
     }
 }

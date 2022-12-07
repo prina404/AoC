@@ -1,6 +1,5 @@
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -11,8 +10,7 @@ public class Part1 {
 
     // Messy code, needs some SEVERE refactoring
     public static void main(String[] args) throws IOException {
-        String in = Files.readString(Path.of("input.txt"));
-        Scanner s = new Scanner(in);
+        Scanner s = new Scanner(new File("input.txt"));
 
         Dir root = new Dir("/");
         List<String> pwd = new ArrayList<>();

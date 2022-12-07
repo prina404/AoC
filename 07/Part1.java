@@ -1,7 +1,9 @@
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -12,7 +14,7 @@ public class Part1 {
         Scanner s = new Scanner(new File("input.txt"));
 
         Dir root = new Dir("/");
-        List<String> pwd = new ArrayList<>();
+        Deque<String> pwd = new LinkedList<>();
         List<Dir> allDir = new ArrayList<>();
 
         while (s.hasNextLine()) {
@@ -23,9 +25,9 @@ public class Part1 {
             switch (tokens[1]) {
                 case "cd":
                     if (tokens[2].equals(".."))
-                        pwd.remove(pwd.size() - 1);
+                        pwd.removeLast();
                     else
-                        pwd.add(tokens[2]);
+                        pwd.addLast(tokens[2]);
                     continue;
                 case "ls":
                     continue;
@@ -40,8 +42,8 @@ public class Part1 {
             }
         }
 
-        //this is needed to remove all duplicates from the list
-        //declaring allDir as a Set in the beginning breaks everything :)
+        // this is needed to remove all duplicates from the list
+        // declaring allDir as a Set in the beginning breaks everything :)
         allDir = new ArrayList<>(new HashSet<>(allDir));
         int sum = 0;
         for (Dir d : allDir) {

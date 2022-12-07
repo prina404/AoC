@@ -2,7 +2,9 @@
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
@@ -14,7 +16,7 @@ public class Part2 {
         Scanner s = new Scanner(new File("input.txt"));
 
         Dir root = new Dir("/");
-        List<String> pwd = new ArrayList<>();
+        Deque<String> pwd = new LinkedList<>();
         Set<Dir> allDir = new HashSet<>();
 
         while (s.hasNextLine()) {
@@ -26,9 +28,9 @@ public class Part2 {
             switch (tokens[1]) {
                 case "cd":
                     if (tokens[2].equals(".."))
-                        pwd.remove(pwd.size() - 1);
+                        pwd.removeLast();
                     else
-                        pwd.add(tokens[2]);
+                        pwd.addLast(tokens[2]);
                     continue;
                 case "ls":
                     continue;

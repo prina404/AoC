@@ -63,4 +63,16 @@ public class Dir implements Entry, Iterable<Entry> {
     public Iterator<Entry> iterator() {
         return contents.iterator();
     }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode() + contents.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Dir)
+            return hashCode() == obj.hashCode();
+        return false;
+    }
 }

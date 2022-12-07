@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 
 public class Part1 {
 
@@ -14,7 +13,7 @@ public class Part1 {
 
         Dir root = new Dir("/");
         List<String> pwd = new ArrayList<>();
-        Set<Dir> allDir = new HashSet<>();
+        List<Dir> allDir = new ArrayList<>();
 
         while (s.hasNextLine()) {
             String line = s.nextLine();
@@ -40,6 +39,10 @@ public class Part1 {
                         current.addElem(new MyFile(tokens[1], Integer.parseInt(tokens[0])));
             }
         }
+
+        //this is needed to remove all duplicates from the list
+        //declaring allDir as a Set in the beginning breaks everything :)
+        allDir = new ArrayList<>(new HashSet<>(allDir));
         int sum = 0;
         for (Dir d : allDir) {
             if (d.getSize() <= 100000) {

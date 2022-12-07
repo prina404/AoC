@@ -20,7 +20,6 @@ benchmark/golang
 02/Part2$RPS.class
 07/Dir.class
 07/Entry.class
-07/Part1.class
-07/Part2.class
 07/MyFile.class
 .gitignore
+07/Solution.class

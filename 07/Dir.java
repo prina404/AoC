@@ -3,13 +3,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-public class Dir implements Entry, Iterable<Entry> {
+public class Dir extends Entry implements Iterable<Entry> {
     private final Set<Entry> contents = new HashSet<>();
-    private final String name;
     private int size = 0;
 
     public Dir(String name) {
-        this.name = name;
+        super(name);
     }
 
     public void addElem(Entry f) {
@@ -41,11 +40,6 @@ public class Dir implements Entry, Iterable<Entry> {
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
     public int getSize() {
         if (size > 0)
             return size;
@@ -55,18 +49,13 @@ public class Dir implements Entry, Iterable<Entry> {
     }
 
     @Override
-    public String toString() {
-        return name + " -> " + contents.size() + " elems\n";
-    }
-
-    @Override
     public Iterator<Entry> iterator() {
         return contents.iterator();
     }
 
     @Override
     public int hashCode() {
-        return name.hashCode() + contents.hashCode();
+        return getName().hashCode() + contents.hashCode();
     }
 
     @Override

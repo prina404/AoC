@@ -1,16 +1,10 @@
 
-public class MyFile implements Entry {
+public class MyFile extends Entry {
     private final int size;
-    private final String name;
 
     public MyFile(String name, int size) {
-        this.name = name;
+        super(name);
         this.size = size;
-    }
-
-    @Override
-    public String getName() {
-        return name;
     }
 
     @Override
@@ -20,9 +14,9 @@ public class MyFile implements Entry {
 
     @Override
     public int hashCode() {
-        return name.hashCode() + size;
+        return getName().hashCode() + size;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof MyFile)

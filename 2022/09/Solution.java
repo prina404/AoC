@@ -34,6 +34,7 @@ public class Solution {
 
             for (int i = 0; i < steps; i++) {
                 move(cmd, knots.get(0));
+
                 // update trailing nodes' position.
                 for (int j = 0; j < knots.size() - 1; j++)
                     adjust(knots.get(j), knots.get(j + 1));
@@ -48,9 +49,9 @@ public class Solution {
         return visited.size();
     }
 
-    // manhattan distance
+    // chebyshev distance
     public static int dist(Point a, Point b) {
-        return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+        return Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
     }
 
     public static void move(String cmd, Point a) {
@@ -62,32 +63,14 @@ public class Solution {
         }
     }
 
+    //improved, but still an unreadable method
     public static void adjust(Point a, Point b) {
-        if (dist(a, b) == 2)
-            correction(a, b, 2);
-        else if (dist(a, b) > 2) {
-            correction(a, b, 1);
-            correction(a, b, 2);
-        }
-    }
-
-    /*
-     * this is a hacky solution due to the choice of using manhattan distance:
-     * if a knot is on a diagonal square its distance is two, 
-     * and I need to avoid moving only in this specific case
-     * 
-     * A better solution would be to use chebyshev distance, will I ever refactor this?
-     */
-
-    public static void correction(Point a, Point b, int delta) {
-        if (a.x - b.x == delta)
-            b.x++;
-        else if (a.x - b.x == -delta)
-            b.x--;
-        if (a.y - b.y == delta)
-            b.y++;
-        else if (a.y - b.y == -delta)
-            b.y--;
+        if (dist(a, b) < 2)
+            return;
+        if (b.x != a.x)
+            b.x += (a.x - b.x > 0) ? 1 : -1;
+        if (b.y != a.y)
+            b.y += (a.y - b.y > 0) ? 1 : -1;
     }
 
     public static void print(int boardSize) {

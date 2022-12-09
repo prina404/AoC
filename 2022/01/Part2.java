@@ -9,21 +9,20 @@ public class Part2 {
         Scanner s = new Scanner(new File("input.txt"));
         List<Integer> topThree = new ArrayList<>();
         int sum = 0;
+        int max = 0;
+
         while (s.hasNextLine()) {
             String line = s.nextLine();
             if (line.isEmpty()) {
                 topThree.add(sum);
-                topThree.sort(null);
-                if (topThree.size() > 3)
-                    topThree.remove(0);
                 sum = 0;
-                continue;
+                line = s.nextLine();
             }
             sum += Integer.parseInt(line);
         }
         s.close();
-        int max = 0;
-        for (int i : topThree)
+        topThree.sort((x, y) -> y - x);
+        for (int i : topThree.subList(0, 3))
             max += i;
         System.out.println(max);
     }

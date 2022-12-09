@@ -34,13 +34,14 @@ public class Solution {
 
             for (int i = 0; i < steps; i++) {
                 move(cmd, knots.get(0));
-                for (int j = 0; j < knots.size() - 1; j++) {
+                // update trailing nodes' position.
+                for (int j = 0; j < knots.size() - 1; j++)
                     adjust(knots.get(j), knots.get(j + 1));
-                }
+
                 int x = knots.get(howManyKnots - 1).x;
                 int y = knots.get(howManyKnots - 1).y;
                 visited.add(new Point(x, y));
-                // print()
+                // print(20)
             }
         }
         s.close();
@@ -69,6 +70,14 @@ public class Solution {
             correction(a, b, 2);
         }
     }
+
+    /*
+     * this is a hacky solution due to the choice of using manhattan distance:
+     * if a knot is on a diagonal square its distance is two, 
+     * and I need to avoid moving only in this specific case
+     * 
+     * A better solution would be to use chebyshev distance, will I ever refactor this?
+     */
 
     public static void correction(Point a, Point b, int delta) {
         if (a.x - b.x == delta)

@@ -10,7 +10,7 @@ public class Monkey implements Iterable<Long> {
     private int test;
     private final int[] next;
     private long inspectionCounter = 0;
-    private final List<Integer> modList = List.of(2, 3, 5, 7, 11, 13, 17, 19, 23);
+    private final List<Long> modList = List.of(2L, 3L, 5L, 7L, 11L, 13L, 17L, 19L, 23L);
     public boolean firstPart = true;
 
     public Monkey(int nth, List<Long> items, Function<Long, Long> f, int test, int[] next) {
@@ -37,8 +37,8 @@ public class Monkey implements Iterable<Long> {
 
     private long modProd() {
         long i = 1;
-        for (Integer long1 : modList)
-            i *= Integer.toUnsignedLong(long1);
+        for (Long mod : modList)
+            i *= mod;
         return i;
     }
 

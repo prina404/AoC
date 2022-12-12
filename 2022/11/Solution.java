@@ -33,7 +33,7 @@ public class Solution {
     }
 
     private static long top2Activity(List<Monkey> l) {
-        l.sort((Comparator<Monkey>) (x, y) -> (int) (y.getActivityCount() - x.getActivityCount()));
+        l.sort((x, y) -> (int) (y.getActivityCount() - x.getActivityCount()));
         return l.get(0).getActivityCount() * l.get(1).getActivityCount();
     }
 
@@ -76,6 +76,7 @@ public class Solution {
 
             monkeyList.add(new Monkey(count++, elems, f, test, next));
         }
+        s.close();
         return monkeyList;
     }
 }

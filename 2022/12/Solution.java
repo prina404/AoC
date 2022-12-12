@@ -28,7 +28,6 @@ public class Solution {
             res = fromOffset(matrix, i);
         }
         System.out.println("part 2: "+min);
-
     }
 
     public static int fromOffset(List<List<Character>> matrix, int startOffset) {
@@ -48,7 +47,7 @@ public class Solution {
                     end = new Point(j, i, 'E', null);
             }
         }
-        var path = BFS(start, end, matrix);
+        List<Point> path = BFS(start, end, matrix);
         if (path != null)
             return path.size();
         return 0;
@@ -63,8 +62,6 @@ public class Solution {
 
         while (!frontier.isEmpty()) {
             Point current = frontier.removeFirst();
-            if (current == null) //this shouldn't be necessary, there's still a bug somewhere
-                continue;
             if (current.isGoal)
                 return path(current, EXL);
             List<Point> neighbours = getNeighbours(current, matrix);
@@ -86,7 +83,6 @@ public class Solution {
             p = p.parent;
         }
         return res;
-
     }
 
     public static boolean isLegal(int x, int y, List<List<Character>> m) {

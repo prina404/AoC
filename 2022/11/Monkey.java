@@ -54,14 +54,4 @@ public class Monkey implements Iterable<Long> {
     public Iterator<Long> iterator() {
         return List.copyOf(items).iterator();
     }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Monkey ").append(nth).append(": ");
-        for (Long i : items)
-            sb.append(i).append(", ");
-        return sb.toString();
-    }
-
 }

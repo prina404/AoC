@@ -5,22 +5,16 @@ public class Point {
     int y;
     char value;
     Point parent;
-    boolean isGoal = false;
-    boolean isStart = false;
 
     public Point(int x, int y, char value, Point parent) {
         this.x = x;
         this.y = y;
         this.value = value;
         this.parent = parent;
-        if (value == 'S') {
+        if (value == 'S')
             this.value = 'a';
-            isStart = true;
-        }
-        if (value == 'E') {
+        if (value == 'E')
             this.value = 'z';
-            isGoal = true;
-        }
     }
 
     @Override

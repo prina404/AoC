@@ -39,8 +39,8 @@ public class Solution {
             List<Point> path = BFS(p[0], p[1], matrix);
             if (path != null)
                 res = path.size();
-            if (res < min) 
-                min = res;   
+            if (res < min)
+                min = res;
         }
         return min;
     }
@@ -53,18 +53,17 @@ public class Solution {
         for (int i = 0; i < matrix.size(); i++) {
             for (int j = 0; j < matrix.get(0).size(); j++) {
                 if (part1 && matrix.get(i).get(j) == 'S')
-                    start = new Point(j, i, 'S', null);
-                else if (matrix.get(i).get(j) == 'a') {
-                    if (aCount == startOffset)
-                        start = new Point(j, i, 'S', null);
-                    aCount++;
-                }
+                    start = new Point(j, i, 'a', null);
+
+                else if (matrix.get(i).get(j) == 'a')
+                    if (aCount++ == startOffset)
+                        start = new Point(j, i, 'a', null);
+
                 if (matrix.get(i).get(j) == 'E')
                     end = new Point(j, i, 'E', null);
             }
         }
         return new Point[] { start, end };
-
     }
 
     public static List<Point> BFS(Point start, Point end, List<List<Character>> matrix) {
@@ -76,8 +75,8 @@ public class Solution {
 
         while (!frontier.isEmpty()) {
             Point current = frontier.removeFirst();
-            if (current.isGoal)
-                return path(current, EXL);
+            if (current.equals(end))
+                return path(current, EXL, start);
             List<Point> neighbours = getNeighbours(current, matrix);
             for (var p : neighbours) {
                 if (!EXL.contains(p)) {
@@ -90,9 +89,9 @@ public class Solution {
     }
 
     // construct the path_to_goal starting from the goal node
-    public static List<Point> path(Point p, Set<Point> exl) {
+    public static List<Point> path(Point p, Set<Point> exl, Point start) {
         List<Point> res = new ArrayList<>();
-        while (!p.isStart) {
+        while (!p.equals(start)) {
             res.add(p);
             p = p.parent;
         }

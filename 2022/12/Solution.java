@@ -8,38 +8,54 @@ public class Solution {
     public static void main(String[] args) throws IOException {
         Scanner s = new Scanner(new File("input.txt"));
         List<List<Character>> matrix = new ArrayList<>();
-        while (s.hasNextLine()){
+        while (s.hasNextLine()) {
             matrix.add(new ArrayList<>());
             String line = s.nextLine();
-            for (Character c : line.toCharArray()) 
-                matrix.get(matrix.size()-1).add(c);
+            for (Character c : line.toCharArray())
+                matrix.get(matrix.size() - 1).add(c);
         }
 
-        int res = fromOffset(matrix, 1);
-        System.out.println("part 1:  " + res);
+        System.out.println("part 1:  " + part1(matrix));
 
         part1 = false;
-
-        //for the second part I execute a BFS for each new 'a' encountered: extremely inefficient
-        int min = Integer.MAX_VALUE;
-        for (int i = 0; i < 1000; i++) { // hardcoded value, should refactor
-            if (res < min && res != 0) 
-                min = res;
-            res = fromOffset(matrix, i);
-        }
-        System.out.println("part 2: "+min);
+        System.out.println("part 2: " + part2(matrix));
     }
 
-    public static int fromOffset(List<List<Character>> matrix, int startOffset) {
+    public static int part1(List<List<Character>> matrix) {
+        Point[] p = fromOffset(matrix, 0);
+        List<Point> path = BFS(p[0], p[1], matrix);
+        if (path != null)
+            return path.size();
+        return 0;
+    }
+
+    // for the second part I execute a BFS for each new 'a' encountered: extremely
+    // inefficient
+    public static int part2(List<List<Character>> matrix) {
+        int min = Integer.MAX_VALUE;
+        int res = 0;
+        for (int i = 0; i < 1000; i++) { // hardcoded value, should refactor
+            Point[] p = fromOffset(matrix, i);
+            List<Point> path = BFS(p[0], p[1], matrix);
+            if (path != null)
+                res = path.size();
+            if (res < min) 
+                min = res;   
+        }
+        return min;
+    }
+
+    // returns start and goal points
+    public static Point[] fromOffset(List<List<Character>> matrix, int startOffset) {
         int aCount = 0;
         Point start = null;
         Point end = null;
         for (int i = 0; i < matrix.size(); i++) {
             for (int j = 0; j < matrix.get(0).size(); j++) {
                 if (part1 && matrix.get(i).get(j) == 'S')
-                    start = new Point(j, i, 'S', null); 
+                    start = new Point(j, i, 'S', null);
                 else if (matrix.get(i).get(j) == 'a') {
-                    if (aCount == startOffset) 
+                    if (aCount == startOffset)
                         start = new Point(j, i, 'S', null);
                     aCount++;
                 }
@@ -47,10 +63,8 @@ public class Solution {
                     end = new Point(j, i, 'E', null);
             }
         }
-        List<Point> path = BFS(start, end, matrix);
-        if (path != null)
-            return path.size();
-        return 0;
+        return new Point[] { start, end };
+
     }
 
     public static List<Point> BFS(Point start, Point end, List<List<Character>> matrix) {
@@ -75,7 +89,7 @@ public class Solution {
         return null;
     }
 
-    //contruct the path_to_goal starting from the goal node
+    // construct the path_to_goal starting from the goal node
     public static List<Point> path(Point p, Set<Point> exl) {
         List<Point> res = new ArrayList<>();
         while (!p.isStart) {
@@ -101,7 +115,7 @@ public class Solution {
         if (isLegal(p.x, p.y - 1, matrix))
             res.add(new Point(p.x, p.y - 1, matrix.get(p.y - 1).get(p.x), p));
         for (Point point : List.copyOf(res))
-            if (point.value > p.value + 1 ) 
+            if (point.value > p.value + 1)
                 res.remove(point);
         return res;
     }

@@ -1,0 +1,112 @@
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+
+public class Solution {
+    static boolean part1 = true;
+
+    public static void main(String[] args) throws IOException {
+        Scanner s = new Scanner(new File("input.txt"));
+        List<List<Character>> matrix = new ArrayList<>();
+        while (s.hasNextLine()){
+            matrix.add(new ArrayList<>());
+            String line = s.nextLine();
+            for (Character c : line.toCharArray()) 
+                matrix.get(matrix.size()-1).add(c);
+        }
+
+        int res = fromOffset(matrix, 1);
+        System.out.println("part 1:  " + res);
+
+        part1 = false;
+
+        //for the second part I execute a BFS for each new 'a' encountered: extremely inefficient
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < 1000; i++) { // hardcoded value, should refactor
+            if (res < min && res != 0) 
+                min = res;
+            res = fromOffset(matrix, i);
+        }
+        System.out.println("part 2: "+min);
+
+    }
+
+    public static int fromOffset(List<List<Character>> matrix, int startOffset) {
+        int aCount = 0;
+        Point start = null;
+        Point end = null;
+        for (int i = 0; i < matrix.size(); i++) {
+            for (int j = 0; j < matrix.get(0).size(); j++) {
+                if (part1 && matrix.get(i).get(j) == 'S')
+                    start = new Point(j, i, 'S', null); 
+                else if (matrix.get(i).get(j) == 'a') {
+                    if (aCount == startOffset) 
+                        start = new Point(j, i, 'S', null);
+                    aCount++;
+                }
+                if (matrix.get(i).get(j) == 'E')
+                    end = new Point(j, i, 'E', null);
+            }
+        }
+        var path = BFS(start, end, matrix);
+        if (path != null)
+            return path.size();
+        return 0;
+    }
+
+    public static List<Point> BFS(Point start, Point end, List<List<Character>> matrix) {
+        Set<Point> EXL = new HashSet<>();
+        EXL.add(start);
+
+        Deque<Point> frontier = new LinkedList<>();
+        frontier.addLast(start);
+
+        while (!frontier.isEmpty()) {
+            Point current = frontier.removeFirst();
+            if (current == null) //this shouldn't be necessary, there's still a bug somewhere
+                continue;
+            if (current.isGoal)
+                return path(current, EXL);
+            List<Point> neighbours = getNeighbours(current, matrix);
+            for (var p : neighbours) {
+                if (!EXL.contains(p)) {
+                    EXL.add(p);
+                    frontier.addLast(p);
+                }
+            }
+        }
+        return null;
+    }
+
+    //contruct the path_to_goal starting from the goal node
+    public static List<Point> path(Point p, Set<Point> exl) {
+        List<Point> res = new ArrayList<>();
+        while (!p.isStart) {
+            res.add(p);
+            p = p.parent;
+        }
+        return res;
+
+    }
+
+    public static boolean isLegal(int x, int y, List<List<Character>> m) {
+        return x >= 0 && y >= 0 && x < m.get(0).size() && y < m.size();
+    }
+
+    // this works but could be done better
+    public static List<Point> getNeighbours(Point p, List<List<Character>> matrix) {
+        List<Point> res = new ArrayList<>();
+        if (isLegal(p.x + 1, p.y, matrix))
+            res.add(new Point(p.x + 1, p.y, matrix.get(p.y).get(p.x + 1), p));
+        if (isLegal(p.x - 1, p.y, matrix))
+            res.add(new Point(p.x - 1, p.y, matrix.get(p.y).get(p.x - 1), p));
+        if (isLegal(p.x, p.y + 1, matrix))
+            res.add(new Point(p.x, p.y + 1, matrix.get(p.y + 1).get(p.x), p));
+        if (isLegal(p.x, p.y - 1, matrix))
+            res.add(new Point(p.x, p.y - 1, matrix.get(p.y - 1).get(p.x), p));
+        for (Point point : List.copyOf(res))
+            if (point.value > p.value + 1 ) 
+                res.remove(point);
+        return res;
+    }
+}

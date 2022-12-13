@@ -1,9 +1,6 @@
 
 import java.util.List;
 
-/**
- * ListEntry
- */
 public class ListEntry extends Entry {
 
     public ListEntry(List<Entry> l) {

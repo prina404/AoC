@@ -1,5 +1,4 @@
 
-
 public class AtomicEntry extends Entry {
 
     public AtomicEntry(int atom) {
@@ -10,6 +9,4 @@ public class AtomicEntry extends Entry {
     public String toString() {
         return String.valueOf(value);
     }
-
-
 }

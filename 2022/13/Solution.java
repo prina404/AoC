@@ -32,7 +32,7 @@ public class Solution {
         Entry sep2 = parseLine(toCharList("[[6]]")).get(0);
         total.add(sep1);
         total.add(sep2);
-        total.sort(null);
+        total.sort((x, y) -> x.compareTo(y));
         int mul = 1;
         for (Entry e : total)
             if (e.equals(sep1) || e.equals(sep2))

@@ -1,5 +1,6 @@
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 public class Solution {
@@ -7,68 +8,31 @@ public class Solution {
     }
 
     static final int width = 400;
+    static int lowestPoint = 0;
 
     public static void main(String[] args) throws IOException {
-        Scanner s = new Scanner(new File("input.txt"));
-
-        List<List<Character>> matrix = new ArrayList<>();
-        for (int i = 0; i < width / 2; i++) {
-            matrix.add(new ArrayList<>());
-            for (int j = 0; j < width; j++)
-                matrix.get(i).add('.');
-        }
-
-        int lowestPoint = 0;
-        while (s.hasNextLine()) {
-            String line = s.nextLine();
-            String[] coords = line.split(" -> ");
-            List<Point> points = new ArrayList<>();
-            for (String cord : coords)
-                points.add(new Point(
-                        Integer.parseInt(cord.split(",")[0]) - (500 - width / 2),
-                        Integer.parseInt(cord.split(",")[1])));
-
-            for (int i = 0; i < coords.length - 1; i++) {
-                Point from = points.get(i);
-                Point to = points.get(i + 1);
-                for (Integer j : range(from.y, to.y)) {
-                    for (Integer j2 : range(from.x, to.x)) {
-                        matrix.get(j).set(j2, '#');
-                        if (j > lowestPoint)
-                            lowestPoint = j;
-                    }
-                }
-            }
-        }
+        String in = Files.readString(Path.of("input.txt"));
+        List<List<Character>> matrix = makeMatrix(in);
 
         Point sandSource = new Point(width / 2, 0);
-        System.out.println("Part1: " + part1(sandSource, matrix, lowestPoint));
+        System.out.println("Part1: " + solve(sandSource, matrix));
 
         for (int i = 0; i < width; i++)
             matrix.get(lowestPoint + 2).set(i, '#');
-
-        System.out.println("Part2: " + part2(sandSource, matrix));
+        lowestPoint += 1;
+        System.out.println("Part2: " + solve(sandSource, matrix));
 
     }
 
-    public static int part1(Point drop, List<List<Character>> matrix, int lowestPoint) {
+    public static int solve(Point source, List<List<Character>> matrix) {
         while (true) {
-            Point fall = new Point(drop.x, drop.y);
-            while (hasMove(fall, matrix)) {
-                fall = move(fall, matrix);
-                if (fall.y > lowestPoint)
-                    return countZeroes(matrix) - 1;
-            }
-        }
-    }
-
-    public static int part2(Point drop, List<List<Character>> matrix) {
-        while (true) {
-            Point fall = new Point(drop.x, drop.y);
-            if (!hasMove(fall, matrix))
+            Point grain = new Point(source.x, source.y);
+            if (!hasMove(grain, matrix))
                 return countZeroes(matrix) + 1;
-            while (hasMove(fall, matrix)) {
-                fall = move(fall, matrix);
+            while (hasMove(grain, matrix)) {
+                grain = move(grain, matrix);
+                if (grain.y > lowestPoint)
+                    return countZeroes(matrix) - 1;
             }
         }
     }
@@ -99,6 +63,39 @@ public class Solution {
             return new Point(p.x + 1, p.y + 1);
         }
         return null;
+    }
+
+    public static List<List<Character>> makeMatrix(String in) {
+        Scanner s = new Scanner(in);
+        List<List<Character>> matrix = new ArrayList<>();
+        for (int i = 0; i < width / 2; i++) {
+            matrix.add(new ArrayList<>());
+            for (int j = 0; j < width; j++)
+                matrix.get(i).add('.');
+        }
+
+        while (s.hasNextLine()) {
+            String[] coords = s.nextLine().split(" -> ");
+            List<Point> points = new ArrayList<>();
+            for (String cord : coords)
+                points.add(new Point(
+                        Integer.parseInt(cord.split(",")[0]) - (500 - width / 2),
+                        Integer.parseInt(cord.split(",")[1])));
+
+            for (int i = 0; i < coords.length - 1; i++) {
+                Point from = points.get(i);
+                Point to = points.get(i + 1);
+                for (Integer j : range(from.y, to.y)) {
+                    for (Integer j2 : range(from.x, to.x)) {
+                        matrix.get(j).set(j2, '#');
+                        if (j > lowestPoint)
+                            lowestPoint = j;
+                    }
+                }
+            }
+        }
+        s.close();
+        return matrix;
     }
 
     public static boolean hasMove(Point p, List<List<Character>> matrix) {

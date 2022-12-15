@@ -5,12 +5,13 @@ import java.util.*;
 
 public class Solution {
 
-    public static record Point(int x, int y) {
-    }
+    public static record Point(int x, int y) {}
 
     // basically the same as Point, defined for clarity
-    public static record Range(int start, int stop) { 
-    }
+    public static record Range(int start, int stop) {}
+
+    static int min_X_coord = 0;
+    static int max_X_coord = 0;
 
     public static void main(String[] args) throws IOException {
         String in = Files.readString(Path.of("input.txt")).replaceAll("[=|,|:]+", " ");
@@ -34,13 +35,11 @@ public class Solution {
 
     }
 
-
     static int solve(int height, Map<Point, Point> sensors) {
         List<Range> atHeight = rangesAtHeight(height, sensors);
-       
         int count = 0;
-        // hardcoded values, should be refactored to be the min/max x coordinates reached by a signal
-        for (int i = -10000000; i < 5000000; i++) { 
+
+        for (int i = min_X_coord; i < max_X_coord; i++) {
             boolean hasSignal = false;
             for (Range rn : atHeight) {
                 if (i >= rn.start && i <= rn.stop && !hasSignal) {
@@ -70,7 +69,7 @@ public class Solution {
     }
 
     // list of signal range for each sensor at a given height
-    public static List<Range> rangesAtHeight(int height, Map<Point, Point> sensors){
+    public static List<Range> rangesAtHeight(int height, Map<Point, Point> sensors) {
         List<Range> atHeight = new ArrayList<>();
         for (Point p : sensors.keySet()) {
             Range r = rangeAt(p, sensors.get(p), height);
@@ -87,8 +86,10 @@ public class Solution {
         int lineDist = Math.abs(line - sensor.y);
         if (lineDist > max_extension)
             return null;
-        int occupation = max_extension - (lineDist);
+        int occupation = max_extension - lineDist;
         Range res = new Range(sensor.x - occupation, sensor.x + occupation);
+        max_X_coord = (res.stop > max_X_coord) ? res.stop : max_X_coord;
+        min_X_coord = (res.start < min_X_coord) ? res.start : min_X_coord;
         return res;
     }
 

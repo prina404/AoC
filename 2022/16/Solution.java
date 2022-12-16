@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 
 public class Solution {
 
-    // should produce both results in ~20 seconds
+    // should produce both results in ~10 seconds
     public static void main(String[] args) throws IOException {
-        String in = Files.readString(Path.of("input.txt")).replaceAll("[=|,|:]+", " ");
+        String in = Files.readString(Path.of("input.txt"));
         Scanner s = new Scanner(in);
         Map<Valve, List<String>> valves = new HashMap<>();
         List<Valve> lst = new ArrayList<>();
@@ -21,7 +21,7 @@ public class Solution {
                 successors.add(line[i]);
             Valve v = new Valve(line[1], Integer.parseInt(line[5]));
 
-            if (v.flowRate != 0) //filter out useless valves
+            if (v.flowRate != 0) // filter out useless valves
                 lst.add(v);
             valves.put(v, successors);
             if (v.equals("AA"))
@@ -42,8 +42,12 @@ public class Solution {
         System.out.println("part1: " + DFS(start, valves, 0, 30));
 
         int max = 0;
+        Set<List<Valve>> s = new HashSet<>(32768, 0.75f);
         for (List<Valve> l : combinations(valves)) {
-            List<Valve> compl = complementary(l, valves);
+            var compl = complementary(l, valves);
+            if (s.contains(compl)) // halving the combinations checked
+                continue;
+            s.add(l);
             int dfsA = DFS(start, l, 0, 26);
             int dfsB = DFS(start, compl, 0, 26);
             max = (dfsA + dfsB > max) ? dfsA + dfsB : max;
@@ -52,9 +56,9 @@ public class Solution {
     }
 
     public static int DFS(Valve start, List<Valve> toVisit, int stepsToArrive, int maxDepth) {
-        // this reduces the maximum depth explored, saving ~15 seconds.
-        // if on another input you get the wrong answer just delete the '-2' 
-        if (stepsToArrive > maxDepth - 2) 
+        // this reduces the maximum depth explored, saving ~5 seconds.
+        // if on another input you get the wrong answer just delete the '-2'
+        if (stepsToArrive > maxDepth -2)
             return 0;
         if (toVisit.isEmpty())
             return start.flowRate * (maxDepth - stepsToArrive);

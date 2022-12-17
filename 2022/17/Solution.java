@@ -5,24 +5,44 @@ import java.util.*;
 
 public class Solution {
 
+    static final int CHUNKSIZE = 30; // increase if you get a wrong answer
     public static void main(String[] args) throws IOException {
         String in = Files.readString(Path.of("input.txt"));
-        Scanner s = new Scanner(in);
-        String wind = s.nextLine();
+        solve(in.strip(), 10000); // increase if you get a wrong answer
+    }
 
+    // really bad and unreadable code...
+    public static int solve(String wind, int iterations) {
         List<Figure> l = new ArrayList<>();
 
         int stringIndex = 0;
-        long tallestPoint = 0;
-        for (int i = 0; i < 2022; i++) {
-             if (l.size() == 100)
-                 l = l.subList(50, l.size());
-             
+        int tallestPoint = 0;
+
+        int prevPatternIndex = 0;
+        int currPatternIndex = 0;
+        int prevHeight = 0;
+        int patternSize = 0;
+        int heightDiff = 0;
+        for (int i = 0; i < iterations; i++) {
+            if (l.size() == CHUNKSIZE)
+                l = l.subList(CHUNKSIZE/2, l.size());
+
             Figure f = new Figure(i % 5, tallestPoint);
             l.add(f);
-            //print(l, '@');
             boolean grounded = false;
             while (!grounded) {
+                if (stringIndex % wind.length() == 0 && i > 0) {
+                    if (prevPatternIndex > 0) { 
+                        prevPatternIndex = currPatternIndex;
+                        currPatternIndex = i;
+                        patternSize = i - prevPatternIndex;
+                        heightDiff = tallestPoint - prevHeight;
+                        prevHeight = tallestPoint;
+                    } else{
+                        prevPatternIndex = i;
+                        prevHeight = tallestPoint;
+                    }
+                }
                 int offset = (wind.charAt(stringIndex++ % wind.length()) == '>') ? 1 : -1;
                 f.moveHorizontal(offset);
                 for (Figure figure : l)
@@ -39,39 +59,16 @@ public class Solution {
                     }
                 }
             }
+            if (i == 2021)
+                System.out.println("Part1 : " + tallestPoint);
         }
-       // print(l, '#');
-        System.out.println(tallestPoint);
-    }
+        if (iterations < 2022)
+            return tallestPoint;
+        
+        long dividend = 1_000_000_000_000L;
+        long res = Long.divideUnsigned(dividend, patternSize) * heightDiff;
 
-    public static int getPatternID(List<Figure> l, int stringIndex){
-        StringBuilder sb = new StringBuilder();
-        for (Figure f : l) 
-            sb.append(f.toString());
-        sb.append(stringIndex);
-        return sb.toString().hashCode();
-         
-    }
-
-    public static void print(List<Figure> l, char c) {
-        for (int i = 10; i >=0; i--) {
-            System.out.println();
-            for (int j = 0; j < 9; j++) {
-                if (j == 0 || j == 8)
-                    System.out.print("|");
-                else {
-                    boolean drawn = false;
-                    for (Figure f : l) {
-                        if (f.occupies(j, i)) {
-                            System.out.print(c);
-                            drawn = true;
-                        }
-                    }
-                    if (!drawn)
-                        System.out.print(".");
-                }
-            }
-        }
-        System.out.println();
+        System.out.println("Part2: " + (res + solve(wind, (int) (dividend % patternSize))));
+        return 0;
     }
 }

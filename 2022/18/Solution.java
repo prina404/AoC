@@ -67,21 +67,14 @@ public class Solution {
         while (!frontier.isEmpty()) {
             Position current = frontier.pop();
             stateSpace.remove(current);
-            for (Position next : getNeighbours(current, stateSpace)) {
-                if (!EXL.contains(next)) {
+            for (Transform tr : transf){
+                Position next = current.move(tr);
+                if (!EXL.contains(next) && stateSpace.contains(next)) {
                     EXL.add(next);
                     frontier.push(next);
                 }
             }
         }
-    }
-
-    public static List<Position> getNeighbours(Position p, Set<Position> stateSpace) {
-        List<Position> res = new ArrayList<>();
-        for (Transform tr : transf)
-            if (stateSpace.contains(p.move(tr)))
-                res.add(p.move(tr));
-        return res;
     }
 
     public static Set<Position> permutations(int maxNum, Set<Position> found) {

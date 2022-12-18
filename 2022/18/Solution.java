@@ -1,4 +1,5 @@
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
@@ -27,20 +28,21 @@ public class Solution {
             new Transform(0, 0, -1) };
 
     public static void main(String[] args) throws IOException {
-        Scanner s = new Scanner(new File("input.txt"));
+        BufferedReader b = new BufferedReader(new FileReader("input.txt"));
         int maxCoordinate = 0;
         Set<Position> found = new HashSet<>();
         Function<String, Integer> f = (x) -> Integer.parseInt(x);
-        while (s.hasNextLine()) {
-            String[] pos = s.nextLine().split(",");
+        while (b.ready()) {
+            String[] pos = b.readLine().split(",");
             Position p = new Position(f.apply(pos[0]), f.apply(pos[1]), f.apply(pos[2]));
             maxCoordinate = (maxCoordinate > p.maxCoord()) ? maxCoordinate : p.maxCoord();
             found.add(p);
         }
-        s.close();
+        b.close();
 
-        System.out.println("part1: " + part1(found));
-        System.out.println("part2: " + part2(found, maxCoordinate));
+        int part1 = part1(found);
+        System.out.println("part1: " + part1);
+        System.out.println("part2: " + (part1 - part2(found, maxCoordinate)));
     }
 
     public static int part1(Set<Position> found) {
@@ -54,21 +56,21 @@ public class Solution {
 
     public static int part2(Set<Position> found, int maxCoordinate) {
         Set<Position> perms = permutations(maxCoordinate, found);
-        BFS(new Position(0, 0, 0), perms);
-        return part1(found) - part1(perms);
+        DFS(new Position(0, 0, 0), perms);
+        return part1(perms);
     }
 
-    public static void BFS(Position start, Set<Position> stateSpace) {
+    public static void DFS(Position start, Set<Position> stateSpace) {
         Deque<Position> frontier = new LinkedList<>();
         Set<Position> EXL = new HashSet<>();
-        frontier.addLast(start);
+        frontier.push(start);
         while (!frontier.isEmpty()) {
-            Position current = frontier.removeFirst();
+            Position current = frontier.pop();
             stateSpace.remove(current);
             for (Position next : getNeighbours(current, stateSpace)) {
                 if (!EXL.contains(next)) {
                     EXL.add(next);
-                    frontier.add(next);
+                    frontier.push(next);
                 }
             }
         }

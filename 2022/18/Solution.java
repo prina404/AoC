@@ -48,8 +48,8 @@ public class Solution {
     public static int part1(Set<Position> found) {
         int maxSurface = 6 * found.size();
         for (Position position : found)
-            for (Position other : found)
-                if (other != position && isAdjacent(other, position))
+            for (Transform tr : transf) 
+                if (found.contains(position.move(tr)))
                     maxSurface--;
         return maxSurface;
     }
@@ -82,13 +82,6 @@ public class Solution {
             if (stateSpace.contains(p.move(tr)))
                 res.add(p.move(tr));
         return res;
-    }
-
-    // it could be more readable, but this way should be more efficient
-    public static boolean isAdjacent(Position a, Position b) {
-        return ((Math.abs(a.x - b.x) == 1 && a.y == b.y && a.z == b.z) ||
-                (a.x == b.x && Math.abs(a.y - b.y) == 1 && a.z == b.z) ||
-                ((a.x == b.x && a.y == b.y && Math.abs(a.z - b.z) == 1)));
     }
 
     public static Set<Position> permutations(int maxNum, Set<Position> found) {

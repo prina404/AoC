@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
 
 public class Solution {
 
@@ -29,18 +30,17 @@ public class Solution {
         Scanner s = new Scanner(new File("input.txt"));
         int maxCoordinate = 0;
         Set<Position> found = new HashSet<>();
+        Function<String, Integer> f = (x) -> Integer.parseInt(x);
         while (s.hasNextLine()) {
             String[] pos = s.nextLine().split(",");
-            Position p = new Position(ints(pos[0]), ints(pos[1]), ints(pos[2]));
+            Position p = new Position(f.apply(pos[0]), f.apply(pos[1]), f.apply(pos[2]));
             maxCoordinate = (maxCoordinate > p.maxCoord()) ? maxCoordinate : p.maxCoord();
             found.add(p);
         }
         s.close();
 
         System.out.println("part1: " + part1(found));
-
         System.out.println("part2: " + part2(found, maxCoordinate));
-
     }
 
     public static int part1(Set<Position> found) {
@@ -94,13 +94,9 @@ public class Solution {
         Position p;
         for (int i = 0; i <= maxNum; i++)
             for (int j = 0; j <= maxNum; j++)
-                for (int j2 = 0; j2 <= maxNum; j2++)
-                    if (!found.contains(p = new Position(i, j, j2)))
+                for (int k = 0; k <= maxNum; k++)
+                    if (!found.contains(p = new Position(i, j, k)))
                         res.add(p);
         return res;
-    }
-
-    public static int ints(String s) {
-        return Integer.parseInt(s);
     }
 }

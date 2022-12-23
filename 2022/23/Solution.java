@@ -17,11 +17,10 @@ public class Solution {
             y++;
         }
         int i = 1;
-        while (!solve()) {
-            if (i == 10)
+        while (solve()) 
+            if (i++ == 10)
                 System.out.println("Part1: " + score());
-            i++;
-        }
+        
         System.out.println("Part2: " + i);
     }
 
@@ -35,7 +34,7 @@ public class Solution {
     static boolean solve() {
         Map<Coord, Integer> map = new HashMap<>();
         var occupation = makeSet();
-        boolean hasMoved = true;
+        boolean hasMoved = false;
         for (Elf e : elves) {
             Coord proposal = e.makeProposal(occupation);
             if (map.containsKey(proposal))
@@ -45,10 +44,11 @@ public class Solution {
         }
         for (Elf e : elves) {
             if (map.get(e.next) > 1)
-                e.dontMove();
+                e.next = e.pos;
             if (e.makeMove())
-                hasMoved = false;
+                hasMoved = true;
         }
+        Elf.updateOrder();
         return hasMoved;
     }
 

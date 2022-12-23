@@ -5,7 +5,7 @@ import java.util.Set;
 public class Elf {
     public Coord pos;
     public Coord next; 
-    private List<Integer> order = new ArrayList<>(List.of(0, 1, 2, 3));
+    private static List<Integer> order = new ArrayList<>(List.of(0, 1, 2, 3));
 
     public Elf(int x, int y) {
         pos = new Coord(x, y);
@@ -20,13 +20,13 @@ public class Elf {
                     isolated = false;
         if (isolated)
             return pos;
-        for (var move : order) {
+        for (Integer move : order) {
             isolated = true;
-            for (var step : Coord.offsets.get(move))
+            for (var step : Coord.offsets[move])
                 if (occupied.contains(pos.sumOffset(step)))
                     isolated = false;
             if (isolated) {
-                next = pos.sumOffset(Coord.offsets.get(move).get(1));
+                next = pos.sumOffset(Coord.offsets[move][1]);
                 return next;
             }
         }
@@ -36,12 +36,11 @@ public class Elf {
     public boolean makeMove() {
         boolean hasMoved = pos != next;
         pos = next;
-        order.add(order.remove(0));
         return hasMoved;
     }
 
-    public void dontMove() {
-        next = pos;
+    public static void updateOrder(){
+        order.add(order.remove(0));
     }
 
     @Override

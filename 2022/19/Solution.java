@@ -41,9 +41,7 @@ public class Solution {
         maxDepth = 24;
         for (int i = 0; i < 30; i++) {
             minGeodeHeight = maxDepth;
-            int res = DFS(start, bp.get(i));
-            sum += (i + 1) * res;
-            System.out.println("BP: " + (i + 1) + " Has score: " + ((i + 1) * res) + " states visited: " + EXL.size());
+            sum += (i + 1) * DFS(start, bp.get(i));
             EXL.clear();
             bestBranch = 0;
         }
@@ -52,9 +50,7 @@ public class Solution {
         sum = 1;
         for (int i = 0; i < 3; i++) {
             minGeodeHeight = maxDepth;
-            int res = DFS(start, bp.get(i));
-            sum *= res;
-            System.out.println("BP: " + (i + 1) + " Has score: " + (res) + " states visited: " + EXL.size());
+            sum *= DFS(start, bp.get(i));
             EXL.clear();
             bestBranch = 0;
         }
@@ -66,25 +62,22 @@ public class Solution {
             return s.resources.geo;
         if (s.depth > maxDepth)
             return 0;
+        if (bestBranch > 0)
+            if (s.bots.geo * (maxDepth - s.depth) + sum(maxDepth - s.depth) + s.resources.geo <= bestBranch)
+                return 0;
         if (s.resources.geo == 1 && s.depth > minGeodeHeight)
             return 0;
         if (s.resources.geo == 1 && s.depth < minGeodeHeight)
             minGeodeHeight = s.depth;
-
-        if (bestBranch > 0)
-            if (s.bots.geo * (maxDepth - s.depth) + sum(maxDepth - s.depth) + s.resources.geo <= bestBranch)
-                return 0;
-
         if (EXL.contains(s))
             return 0;
         EXL.add(s);
 
         int max = 0;
-        for (State next : getSuccessors(s, b)) {
-            int res = DFS(next, b);
-            max = (res > max) ? res : max;
-        }
-        bestBranch = (max > bestBranch) ? max : bestBranch;
+        for (State next : getSuccessors(s, b))
+            max = Math.max(max, DFS(next, b));
+
+        bestBranch = Math.max(max, bestBranch);
         return max;
     }
 
@@ -100,18 +93,15 @@ public class Solution {
             return Collections.emptyList();
         List<State> res = new ArrayList<>();
 
-        State nextOre = nextOreBot(s, b);
-        State nextClay = nextClayBot(s, b);
-        State nextObs = nextObsBot(s, b);
-        State nextGeo = nextGeoBot(s, b);
-        if (nextGeo != null)
-            res.add(nextGeo);
-        if (nextObs != null)
-            res.add(nextObs);
-        if (nextClay != null)
-            res.add(nextClay);
-        if (nextOre != null)
-            res.add(nextOre);
+        State next;
+        if ((next = nextGeoBot(s, b)) != null)
+            res.add(next);
+        if ((next = nextObsBot(s, b)) != null)
+            res.add(next);
+        if ((next = nextClayBot(s, b)) != null)
+            res.add(next);
+        if ((next = nextOreBot(s, b)) != null)
+            res.add(next);
         res.add(nextMinute(s));
         return res;
     }

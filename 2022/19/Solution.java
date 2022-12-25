@@ -4,10 +4,9 @@ import java.util.*;
 import java.util.function.Function;
 
 public class Solution {
-    // code is bad, unefficient and unreadable
-    // runs in ~20 sec
-    public record Cost(int ore, int clay, int obs, int geo) {
-    }
+    // code is bad and unreadable
+    // but runs in < 1 sec 
+    public record Cost(int ore, int clay, int obs, int geo) {}
 
     public record Blueprint(Cost oreBot, Cost clayBot, Cost obsBot, Cost geoBot) {
         public int maxOre() {
@@ -15,11 +14,10 @@ public class Solution {
         }
     }
 
-    public record State(Cost bots, Cost resources, int depth) {
-    }
+    public record State(Cost bots, Cost resources, int depth) {}
 
     static List<Blueprint> bp = new ArrayList<>();
-    static Set<State> EXL = new HashSet<>();
+    static Set<Integer> EXL = new HashSet<>();
     static int bestBranch = 0;
     static int maxDepth = 0;
     static int minGeodeHeight = 24;
@@ -60,18 +58,15 @@ public class Solution {
     public static int DFS(State s, Blueprint b) {
         if (s.depth == maxDepth)
             return s.resources.geo;
-        if (s.depth > maxDepth)
+        if (s.bots.geo * (maxDepth - s.depth) + sum(maxDepth - s.depth) + s.resources.geo <= bestBranch)
             return 0;
-        if (bestBranch > 0)
-            if (s.bots.geo * (maxDepth - s.depth) + sum(maxDepth - s.depth) + s.resources.geo <= bestBranch)
-                return 0;
         if (s.resources.geo == 1 && s.depth > minGeodeHeight)
             return 0;
         if (s.resources.geo == 1 && s.depth < minGeodeHeight)
             minGeodeHeight = s.depth;
-        if (EXL.contains(s))
+        if (EXL.contains(StateID(s)))
             return 0;
-        EXL.add(s);
+        EXL.add(StateID(s));
 
         int max = 0;
         for (State next : getSuccessors(s, b))
@@ -79,6 +74,17 @@ public class Solution {
 
         bestBranch = Math.max(max, bestBranch);
         return max;
+    }
+
+    private static int StateID(State s) {
+        return s.resources.ore + 
+                (s.resources.clay<<7)+
+                (s.resources.obs<<14)+
+                (s.bots.geo<<21)+
+                (s.bots.ore<<28)+ 
+                (s.bots.clay<<35)+ 
+                (s.bots.obs<<42)+
+                (s.depth<<49); 
     }
 
     private static int sum(int n) {
@@ -92,8 +98,8 @@ public class Solution {
         if (s.depth >= maxDepth)
             return Collections.emptyList();
         List<State> res = new ArrayList<>();
-
         State next;
+        
         if ((next = nextGeoBot(s, b)) != null)
             res.add(next);
         if ((next = nextObsBot(s, b)) != null)

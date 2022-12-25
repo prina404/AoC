@@ -5,15 +5,24 @@ import java.util.function.Function;
 
 public class Solution {
     // code is bad, unefficient and unreadable
-    // needs some heavy refactoring
-    public record Cost(int ore, int clay, int obs, int geo) {}
-    public record Blueprint(Cost oreBot, Cost clayBot, Cost obsBot, Cost geoBot) {}
-    public record State(Cost bots, Cost resources, int depth) {}
+    // runs in ~20 sec
+    public record Cost(int ore, int clay, int obs, int geo) {
+    }
+
+    public record Blueprint(Cost oreBot, Cost clayBot, Cost obsBot, Cost geoBot) {
+        public int maxOre() {
+            return Math.max(oreBot.ore, Math.max(clayBot.ore, Math.max(obsBot.ore, geoBot.ore)));
+        }
+    }
+
+    public record State(Cost bots, Cost resources, int depth) {
+    }
 
     static List<Blueprint> bp = new ArrayList<>();
     static Set<State> EXL = new HashSet<>();
     static int bestBranch = 0;
     static int maxDepth = 0;
+    static int minGeodeHeight = 24;
 
     public static void main(String[] args) throws FileNotFoundException {
         Scanner s = new Scanner(new File("input.txt"));
@@ -31,6 +40,7 @@ public class Solution {
         int sum = 0;
         maxDepth = 24;
         for (int i = 0; i < 30; i++) {
+            minGeodeHeight = maxDepth;
             int res = DFS(start, bp.get(i));
             sum += (i + 1) * res;
             System.out.println("BP: " + (i + 1) + " Has score: " + ((i + 1) * res) + " states visited: " + EXL.size());
@@ -41,6 +51,7 @@ public class Solution {
         maxDepth = 32;
         sum = 1;
         for (int i = 0; i < 3; i++) {
+            minGeodeHeight = maxDepth;
             int res = DFS(start, bp.get(i));
             sum *= res;
             System.out.println("BP: " + (i + 1) + " Has score: " + (res) + " states visited: " + EXL.size());
@@ -55,14 +66,19 @@ public class Solution {
             return s.resources.geo;
         if (s.depth > maxDepth)
             return 0;
+        if (s.resources.geo == 1 && s.depth > minGeodeHeight)
+            return 0;
+        if (s.resources.geo == 1 && s.depth < minGeodeHeight)
+            minGeodeHeight = s.depth;
 
-        if (bestBranch > 0) 
+        if (bestBranch > 0)
             if (s.bots.geo * (maxDepth - s.depth) + sum(maxDepth - s.depth) + s.resources.geo <= bestBranch)
                 return 0;
-        
+
         if (EXL.contains(s))
             return 0;
         EXL.add(s);
+
         int max = 0;
         for (State next : getSuccessors(s, b)) {
             int res = DFS(next, b);
@@ -101,7 +117,7 @@ public class Solution {
     }
 
     private static State nextOreBot(State s, Blueprint b) {
-        if (s.bots.ore > 4)
+        if (s.bots.ore > b.maxOre() || s.depth > maxDepth - 17)
             return null;
         if (s.resources.ore >= b.oreBot.ore)
             return new State(new Cost(s.bots.ore + 1, s.bots.clay, s.bots.obs, s.bots.geo),
@@ -114,7 +130,7 @@ public class Solution {
     }
 
     private static State nextClayBot(State s, Blueprint b) {
-        if (s.bots.clay > 20 || s.depth > maxDepth - 4)
+        if (s.bots.clay >= b.obsBot.clay || s.depth > maxDepth - 9)
             return null;
         if (s.resources.ore >= b.clayBot.ore)
             return new State(new Cost(s.bots.ore, s.bots.clay + 1, s.bots.obs, s.bots.geo),
@@ -127,7 +143,7 @@ public class Solution {
     }
 
     private static State nextObsBot(State s, Blueprint b) {
-        if (s.bots.clay == 0 || s.bots.obs > 18 || s.depth > maxDepth - 3)
+        if (s.bots.clay == 0 || s.bots.obs >= b.geoBot.obs || s.depth > maxDepth - 4)
             return null;
         if (s.resources.ore >= b.obsBot.ore && s.resources.clay >= b.obsBot.clay)
             return new State(new Cost(s.bots.ore, s.bots.clay, s.bots.obs + 1, s.bots.geo),

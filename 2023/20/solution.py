@@ -7,11 +7,13 @@ HIGH = 1
 
 
 class Node:
+
+    pulseCount = {LOW: 0, HIGH: 0}
+
     def __init__(self, name, otherNodes, debugNode=False):
         self.name = name.strip()
         self.nodes = [x.strip() for x in otherNodes.split(",")]
         self.inputBuffer = []
-        self.pulseCount = {LOW: 0, HIGH: 0}
         self.debug = debugNode
 
     def registerObserver(self, name):
@@ -74,29 +76,24 @@ def solve(broadcast, nodeDict: dict[str, Node]):
     terminalNode = [nodeDict[x] for x in nodeDict if "rx" in nodeDict[x].nodes][0]
     nParents = len(terminalNode.observers)
     parentCycle = []
-    buttoncount = 0
+    nIter = 0
     while True:
-        buttoncount += 1
+        nIter += 1
         for node in broadcast:  # Broadcast from source node
             nodeDict[node].receive(None, LOW)
 
         while sum([x.bufSize() for x in nodeDict.values()]) > 0:  # Process all nodes until no more pulses are exchanged
             for node in nodeDict:
                 highPulse = nodeDict[node].processInput(nodeDict)
-
                 if highPulse and node == terminalNode.name:  # cycle detection for part2
-                    parentCycle.append(buttoncount)
+                    parentCycle.append(nIter)
+
+        if nIter == 1000:  # part1
+            print(f"part1: {(1000 + Node.pulseCount[LOW]) * Node.pulseCount[HIGH]}")
 
         if len(parentCycle) == nParents:  # part2
             print(f"part2: {math.lcm(*parentCycle)}")
             return
-
-        if buttoncount == 1000:  # part1
-            lowCount = buttoncount + sum([x.pulseCount[LOW] for x in nodeDict.values()])
-            highCount = sum([x.pulseCount[HIGH] for x in nodeDict.values()])
-            lowCount *= 1000 / buttoncount
-            highCount *= 1000 / buttoncount
-            print(f"part1: { int(lowCount*highCount)}")
 
 
 if __name__ == "__main__":

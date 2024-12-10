@@ -32,7 +32,7 @@ def BFS(mat: list[list[str]], startPos: tuple, part1: bool) -> int:
             score += 1
 
         for nbr in conn4nbr(mat, current):
-            if not part1 and nbr in visited:
+            if nbr in visited:
                 continue
             EXL.append(nbr)
             
